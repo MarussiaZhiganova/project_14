@@ -18,7 +18,7 @@ module.exports.createCards = (req, res) => {
 
 
 module.exports.deleteCard = (req, res) => {
-  Card.findById(req.params.id)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return Promise.reject(new Error(`Карточка с _id:${req.params.id} не найдена в базе данных`));
@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res) => {
     })
     .then((owner) => {
       if (req.user._id === owner.toString()) {
-        return Card.findByIdAndRemove(req.params.id);
+        return Card.findByIdAndRemove(req.params.cardId);
       }
       return Promise.reject(new Error('нет доступа для удаления карточки'));
     })
