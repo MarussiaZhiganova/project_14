@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+const helmet = require('helmet');
+
 const auth = require('./middlewares/auth');
 
 const { createUser, login } = require('./controllers/users');
@@ -17,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
+app.use(helmet());
 app.use(cookieParser());
 
 app.use(bodyParser.json());

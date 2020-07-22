@@ -16,16 +16,22 @@ module.exports.createCards = (req, res) => {
     });
 };
 
+
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.id)
     .then((card) => {
-      if(!card) {
-        return res.status(404).send({message: 'Данной карточки нет!'})
+      if (!card) {
+        return Promise.reject(new Error(`Карточка с _id:${req.params.id} не найдена в базе данных`));
       }
-      if(String(card.owner) !== req.user._id) {
-        return res.status(401).send({message: 'Это не Ваша карта! Нельзя удалять!'})
-      }
-        return res.send({message: 'Ваша карточка удалена!'})
+      const { owner } = card;
+      return owner;
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка при удалении карточки' }));
+    .then((owner) => {
+      if (req.user._id === owner.toString()) {
+        return Card.findByIdAndRemove(req.params.id);
+      }
+      return Promise.reject(new Error('нет доступа для удаления карточки'));
+    })
+    .then(() => res.status(200).send({ message: `Карточка с _id:${req.params.id} успешно удалена из базы данных` }))
+    .catch((err) => res.status(500).send({ message: err.message }));
 };

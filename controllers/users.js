@@ -23,28 +23,31 @@ module.exports.getUserId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-
   bcrypt.hash(req.body.password, 10)
-  .then((hash) => User.create({
+    .then((hash) => User.create({
       name: req.body.name,
       about: req.body.about,
       avatar: req.body.avatar,
       email: req.body.email,
       password: hash,
-  }))
-  .then(({ name, about, avatar, email}) => res.send({ name, about, avatar, email }))
-  .catch((err) => res.status(400).send({ message: err.message }));
+    }))
+    .then(({
+      name, about, avatar, email,
+    }) => res.send({
+      name, about, avatar, email,
+    }))
+    .catch((err) => res.status(400).send({ message: err.message }));
 };
 
 
 module.exports.login = (req, res) => {
-  const { email, password} = req.body;
+  const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-     res.send({
-        token: jwt.sign({ _id: user._id  }, 'super-strong-secret', { expiresIn: '7d' }), message: "Авторизация пройдена!"
-     });
-})
+      res.send({
+        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }), message: 'Авторизация пройдена!',
+      });
+    })
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
