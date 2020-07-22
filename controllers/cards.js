@@ -21,7 +21,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return Promise.reject(new Error(`Карточка с _id:${req.params.id} не найдена в базе данных`));
+        return Promise.reject(new Error(`Карточка с _id:${req.params.cardId} не найдена в базе данных`));
       }
       const { owner } = card;
       return owner;
@@ -32,6 +32,6 @@ module.exports.deleteCard = (req, res) => {
       }
       return Promise.reject(new Error('нет доступа для удаления карточки'));
     })
-    .then(() => res.status(200).send({ message: `Карточка с _id:${req.params.id} успешно удалена из базы данных` }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then(() => res.status(200).send({ message: `Карточка с _id:${req.params.cardId} успешно удалена из базы данных` }))
+    .catch((err) => res.status(403).send({ message: err.message }));
 };
